@@ -28,11 +28,20 @@ jobs:
 
     - name: Configure CMake
       shell: bash
-      run: |
-        cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=/emsdk/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake -DCOOLPROP_JAVASCRIPT_MODULE:BOOL=ON -DCOOLPROP_ASYNC_JS:BOOL=OFF -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+      run: |     
+        cmake -B build -S . \
+          -DCMAKE_TOOLCHAIN_FILE=/emsdk/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake \
+          -DCOOLPROP_JAVASCRIPT_MODULE:BOOL=ON \
+          -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+
+        # 🔧 Rimuove async/modularize dalle flag emscripten
+        find build/CMakeFiles -type f -name "flags.make" -print0 | xargs -0 sed -i 's/-s MODULARIZE=1//g'
+        find build/CMakeFiles -type f -name "flags.make" -print0 | xargs -0 sed -i 's/-s EXPORT_ES6=1//g'
+
+      # cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=/emsdk/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake -DCOOLPROP_JAVASCRIPT_MODULE:BOOL=ON -DCMAKE_BUILD_TYPE=$BUILD_TYPE
       # cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=/emsdk/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake -DCOOLPROP_JAVASCRIPT_MODULE:BOOL=ON -DCMAKE_BUILD_TYPE=$BUILD_TYPE
       # cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=/emsdk/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake -DCOOLPROP_JAVASCRIPT_MODULE:BOOL=ON -DEMSCRIPTEN_INIT_FLAG:BOOL=ON  -DCMAKE_BUILD_TYPE=RelWithDebInfo
-
+   
     - name: Build
       shell: bash
       run: |
